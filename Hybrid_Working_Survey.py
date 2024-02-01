@@ -129,7 +129,7 @@ class DataProcessor:
         supervisor_data.append([])
         
         for supervisor in self.supervisor_list:
-            supervisor_talked_cnt = f'''=COUNTIFS('one-on-one_Talk_月結'!$G${1+self.max_row}:$G${self.max_row+self.last_month_count-1},"{supervisor}",'one-on-one_Talk_月結'!$I${self.max_row+1+self.last_month_count}:$I${self.max_row+self.last_month_count-1},"OK")'''
+            supervisor_talked_cnt = f'''=COUNTIFS('one-on-one_Talk_月結'!$G${1+self.max_row}:$G${self.max_row+self.last_month_count-1},"{supervisor}",'one-on-one_Talk_月結'!$I${self.max_row+1}:$I${self.max_row+self.last_month_count-1},"OK")'''
             supervisor_member_cnt = f'''=COUNTIFS('one-on-one_Talk_月結'!$G${1+self.max_row}:$G${self.max_row+self.last_month_count-1},"{supervisor}")'''
             supervisor_data.append(['', supervisor, supervisor_talked_cnt, supervisor_member_cnt])
         
