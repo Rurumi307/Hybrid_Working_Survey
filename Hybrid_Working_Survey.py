@@ -42,7 +42,7 @@ class DataProcessor:
         self.df_date = self.df_date.join(self.df_work_day.set_index('Date'), on='Date')
         # Transpose the working days dataframe and reorder the columns
         self.df_update = self.df_work_day.set_index('Week').T
-        order_list = ['Date'] + list(range(0, 69))
+        order_list = ['Date'] + list(range(0, self.count_people))
         self.df_update = pd.concat([self.df_it, self.df_update], axis=1).reindex(order_list)
         
         # Write the working days dataframe to Excel
