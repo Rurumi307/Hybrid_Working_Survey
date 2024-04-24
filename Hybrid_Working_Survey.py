@@ -4,7 +4,7 @@ from openpyxl.utils import get_column_letter
 from Hybrid_Working_module import *
 
 class DataProcessor:
-    def __init__(self, year, month, national_holidays, supervisor_list, last_month_count):
+    def __init__(self, year, month, national_holidays, last_month_count):
         """
         Initialize the DataProcessor class.
 
@@ -12,7 +12,6 @@ class DataProcessor:
             year (int): The year.
             month (int): The month.
             national_holidays (list): List of national holidays.
-            supervisor_list (list): List of supervisors.
             last_month_count (int): The count of people from the last month.
         """
         self.year = year
@@ -25,7 +24,7 @@ class DataProcessor:
         self.df_it_talk = pd.read_excel('./IT.xlsx', sheet_name='one_on_one_talk_statistic')
         self.max_row = len(self.df_it_talk)
         self.talk_sheet_name = f'one-on-one_TalkStatistic_{str(month).zfill(2)}{year}'
-        self.supervisor_list = supervisor_list
+        self.df_supervisor = pd.read_excel('./IT.xlsx', sheet_name='supervisor')
         self.last_month_count = last_month_count
 
     def _process_data(self):
@@ -103,7 +102,7 @@ class DataProcessor:
         data = self.df_talk_func.values.tolist()
         for idx, row in enumerate(data):
             column_letter = get_column_letter(6 + cnt_working_days)
-            cell_range = f'G${idx+4}:{column_letter}{idx+4}'
+            cell_range = f'G{idx+4}:{column_letter}{idx+4}'
             activity_monthly_count = f'''=COUNTIFS('{self.talk_sheet_name}'!{cell_range},"v")'''
             achieve_goals = f'''=IF(H{idx+2}>0, "OK", "need to arrange")'''
             data[idx].extend([activity_monthly_count, achieve_goals])
@@ -120,15 +119,15 @@ class DataProcessor:
         supervisor_data = []
         year_month = datetime.datetime(self.year, self.month, 1).strftime("%b %Y")
         
-        for supervisor in self.supervisor_list:
+        for supervisor in self.df_supervisor['上級主管']:
             supervisor_talked_cnt = f'''=COUNTIFS('one-on-one_Talk_月結'!$G$1:$G${self.max_row},"{supervisor}",'one-on-one_Talk_月結'!$I$1:$I${self.max_row},"OK")'''
             supervisor_member_cnt = f'''=COUNTIFS('one-on-one_Talk_月結'!$G$1:$G${self.max_row},"{supervisor}")'''
             supervisor_data.append([year_month, supervisor, supervisor_talked_cnt, supervisor_member_cnt])
         
-        supervisor_data.append(['', '', f'=SUM(D2:D9)', f'=SUM(E2:E9)'])
+        supervisor_data.append(['', '', f'=SUM(D2:D{len(self.df_supervisor)+1})', f'=SUM(E2:E{len(self.df_supervisor)+1})'])
         supervisor_data.append([])
         
-        for supervisor in self.supervisor_list:
+        for supervisor in self.df_supervisor['上級主管']:
             supervisor_talked_cnt = f'''=COUNTIFS('one-on-one_Talk_月結'!$G${1+self.max_row}:$G${self.max_row+self.last_month_count-1},"{supervisor}",'one-on-one_Talk_月結'!$I${self.max_row+1}:$I${self.max_row+self.last_month_count-1},"OK")'''
             supervisor_member_cnt = f'''=COUNTIFS('one-on-one_Talk_月結'!$G${1+self.max_row}:$G${self.max_row+self.last_month_count-1},"{supervisor}")'''
             supervisor_data.append(['', supervisor, supervisor_talked_cnt, supervisor_member_cnt])
