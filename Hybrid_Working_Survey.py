@@ -94,7 +94,7 @@ class DataProcessor:
         """
         Process the talk data by adding new columns, calculating metrics, and writing to Excel.
         """
-        _sheet_name = 'one-on-one_Talk_月結'
+        _sheet_name = '勿動_one-on-one_Talk_月結'
         self.df_talk_func = self.df_it_talk[~self.df_it_talk['上級主管'].isnull()].copy()
         self.df_talk_func['YearMonth'] = datetime.datetime(self.year, self.month, 1).strftime("%b %Y")
         self.df_talk_func = self.df_talk_func[['YearMonth', '工號', '姓名', '事業處名', '處級名', '部級名', '上級主管']]
@@ -115,21 +115,21 @@ class DataProcessor:
         """
         Process the supervisor data by adding new rows, calculating metrics, and writing to Excel.
         """
-        _sheet_name = 'one-on-one_Talk_月分析'
+        _sheet_name = '勿動_one-on-one_Talk_月分析'
         supervisor_data = []
         year_month = datetime.datetime(self.year, self.month, 1).strftime("%b %Y")
         
         for supervisor in self.df_supervisor['上級主管']:
-            supervisor_talked_cnt = f'''=COUNTIFS('one-on-one_Talk_月結'!$G$1:$G${self.max_row},"{supervisor}",'one-on-one_Talk_月結'!$I$1:$I${self.max_row},"OK")'''
-            supervisor_member_cnt = f'''=COUNTIFS('one-on-one_Talk_月結'!$G$1:$G${self.max_row},"{supervisor}")'''
+            supervisor_talked_cnt = f'''=COUNTIFS('勿動_one-on-one_Talk_月結'!$G$1:$G${self.max_row},"{supervisor}",'勿動_one-on-one_Talk_月結'!$I$1:$I${self.max_row},"OK")'''
+            supervisor_member_cnt = f'''=COUNTIFS('勿動_one-on-one_Talk_月結'!$G$1:$G${self.max_row},"{supervisor}")'''
             supervisor_data.append([year_month, supervisor, supervisor_talked_cnt, supervisor_member_cnt])
         
         supervisor_data.append(['', '', f'=SUM(D2:D{len(self.df_supervisor)+1})', f'=SUM(E2:E{len(self.df_supervisor)+1})'])
         supervisor_data.append([])
         
         for supervisor in self.df_supervisor['上級主管']:
-            supervisor_talked_cnt = f'''=COUNTIFS('one-on-one_Talk_月結'!$G${1+self.max_row}:$G${self.max_row+self.last_month_count-1},"{supervisor}",'one-on-one_Talk_月結'!$I${self.max_row+1}:$I${self.max_row+self.last_month_count-1},"OK")'''
-            supervisor_member_cnt = f'''=COUNTIFS('one-on-one_Talk_月結'!$G${1+self.max_row}:$G${self.max_row+self.last_month_count-1},"{supervisor}")'''
+            supervisor_talked_cnt = f'''=COUNTIFS('勿動_one-on-one_Talk_月結'!$G${1+self.max_row}:$G${self.max_row+self.last_month_count-1},"{supervisor}",'勿動_one-on-one_Talk_月結'!$I${self.max_row+1}:$I${self.max_row+self.last_month_count-1},"OK")'''
+            supervisor_member_cnt = f'''=COUNTIFS('勿動_one-on-one_Talk_月結'!$G${1+self.max_row}:$G${self.max_row+self.last_month_count-1},"{supervisor}")'''
             supervisor_data.append(['', supervisor, supervisor_talked_cnt, supervisor_member_cnt])
         
         df_analysis = pd.DataFrame(supervisor_data, columns=['YearMonth', '上級主管', 'Talked', 'member count'])

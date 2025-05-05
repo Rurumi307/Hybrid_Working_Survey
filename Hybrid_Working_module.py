@@ -55,7 +55,7 @@ def create_working_days_list(year, month, national_holidays):
             "Week": get_week_of_month(year, month, day)
         }
         for day in range(1, days + 1)
-        if calendar.weekday(year, month, day) < 5 and f"{year}/{month}/{day}" not in national_holidays
+        if calendar.weekday(year, month, day) < 5
     ]
 
     days_list = [f"{year}/{month}/{day}" for day in range(1, days + 1)]
