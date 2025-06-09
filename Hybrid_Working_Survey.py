@@ -68,14 +68,15 @@ class DataProcessor:
                 cnt_wfh, pct_wfh, cnt_office_work, pct_office_work, cnt_leave, pct_leave, \
                 cnt_empty, pct_empty, cnt_filled, pct_filled, check_cnt = calculate_metrics(self.YYYY_MM, cell_range, idx)
                 data[idx].extend([
-                    cnt_wfh, pct_wfh, cnt_office_work, pct_office_work, cnt_leave, pct_leave,
-                    cnt_empty, pct_empty, cnt_filled, pct_filled, it_total_count_formula, check_cnt
+                    cnt_wfh, cnt_office_work, cnt_leave, cnt_empty, cnt_filled, 
+                    pct_wfh, pct_office_work, pct_leave, pct_empty, pct_filled, 
+                    it_total_count_formula, check_cnt
                 ])
                 column_index += 1
             else:
                 data[idx].extend(['-' for _ in range(10)])
                 data[idx].append(it_total_count_formula)
-        self.df_date = pd.DataFrame(data, columns=['Date', 'Week', '居家工作', '居家工作%', '進公司', '進公司%', '請假', '請假%', '未填', '未填%', '已填', '已填%', 'IT總人數', 'Column2'])
+        self.df_date = pd.DataFrame(data, columns=['Date', 'Week', '居家工作', '進公司', '請假', '未填', '已填', '居家工作%', '進公司%', '請假%', '未填%', '已填%', 'IT總人數', 'Column2'])
         self.df_date = self.df_date.drop('Week', axis=1)
         write_dataframe_to_excel(self.df_date, self.file_path, f'{self.YYYY_MM}_Func')
         return self
@@ -97,16 +98,16 @@ class DataProcessor:
         _sheet_name = '勿動_one-on-one_Talk_月結'
         self.df_talk_func = self.df_it_talk[~self.df_it_talk['上級主管'].isnull()].copy()
         self.df_talk_func['YearMonth'] = datetime.datetime(self.year, self.month, 1).strftime("%b %Y")
-        self.df_talk_func = self.df_talk_func[['YearMonth', '工號', '姓名', '事業處名', '處級名', '部級名', '上級主管']]
+        self.df_talk_func = self.df_talk_func[['YearMonth', '工號', '姓名', '處級名', '部級名', '上級主管']]
         cnt_working_days = len(create_working_days_list(self.year, self.month, self.national_holidays)[0])
         data = self.df_talk_func.values.tolist()
         for idx, row in enumerate(data):
             column_letter = get_column_letter(6 + cnt_working_days)
             cell_range = f'G{idx+4}:{column_letter}{idx+4}'
             activity_monthly_count = f'''=COUNTIFS('{self.talk_sheet_name}'!{cell_range},"v")'''
-            achieve_goals = f'''=IF(H{idx+2}>0, "OK", "need to arrange")'''
+            achieve_goals = f'''=IF(G{idx+2}>0, "OK", "need to arrange")'''
             data[idx].extend([activity_monthly_count, achieve_goals])
-        self.df_talk_func = pd.DataFrame(data, columns=['YearMonth', '員工工號', '員工姓名', '事業處名', '處級名', '部級名', '上級主管',
+        self.df_talk_func = pd.DataFrame(data, columns=['YearMonth', '員工工號', '員工姓名', '處級名', '部級名', '上級主管',
                                                    'one-on-one activity_monthly count', 'Achieve goals'])
         write_dataframe_to_excel(self.df_talk_func, self.file_path, _sheet_name)
         return self

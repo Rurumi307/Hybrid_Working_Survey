@@ -166,10 +166,12 @@ def calculate_metrics(sheet_name, cell_range, index):
     percentage_empty = f'''ROUND(([@未填]/[@IT總人數])*100,2) & "%"'''
 
     # Calculate the count and percentage of filled cells
-    count_filled = f'''=B{index+2}+D{index+2}+F{index+2}'''
+    # B: count_wfh, C: count_office_work, D: count_leave
+    count_filled = f'''=B{index+2}+C{index+2}+D{index+2}'''
     percentage_filled = f'''ROUND(([@已填]/[@IT總人數])*100,2) & "%"'''
 
     # Check if the total count matches the sum of individual counts
-    check_count = f'''=IF(($H{index+2}+$J{index+2})=$L{index+2},"OK", "error")'''
+    # E: count_empty, F: count_filled, L: IT total count
+    check_count = f'''=IF(($E{index+2}+$F{index+2})=$L{index+2},"OK", "error")'''
 
     return count_wfh, percentage_wfh, count_office_work, percentage_office_work, count_leave, percentage_leave, count_empty, percentage_empty, count_filled, percentage_filled, check_count
